@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserException.class)
-    public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserException ex, WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleUserException(UserException ex, WebRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(
                 ex.getMessage(),
                 LocalDateTime.now(),

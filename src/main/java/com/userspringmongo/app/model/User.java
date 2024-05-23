@@ -1,6 +1,8 @@
 package com.userspringmongo.app.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.data.annotation.Id;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
@@ -8,6 +10,9 @@ import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
 
 public class User {
+
+    @Id
+    private String id;
 
     @Email(message = "Please provide a valid email")
     @NotBlank(message = "Email is required")
@@ -28,22 +33,26 @@ public class User {
     @Pattern(regexp="(^$|[0-9]{3}-[0-9]{3}-[0-9]{4})", message = "Phone number must be in the format xxx-xxx-xxxx")
     private String phoneNumber;
 
-    private String id;
-
-
     public User() {
     }
 
-    public User(String email, String firstName, String lastName, LocalDate birthDate, String address, String phoneNumber, String id) {
+
+    public User(String email, String firstName, String lastName, LocalDate birthDate, String address, String phoneNumber) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;
         this.address = address;
         this.phoneNumber = phoneNumber;
-        this.id = id;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getEmail() {
         return email;
@@ -91,13 +100,5 @@ public class User {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 }

@@ -1,6 +1,7 @@
 package com.userspringmongo.app.service;
 
 import com.userspringmongo.app.model.User;
+import com.userspringmongo.app.exception.UserException;
 import com.userspringmongo.app.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class UserService {
         return userRepository.findByBirthDateBetween(fromDate, toDate);
     }
 
-    public Optional<User> getUserById(String id) {
-        return userRepository.findById(id);
+    public User getUserById(String id) {
+        return userRepository.findById(id).orElseThrow(() -> new UserException("User not found"));
     }
 }

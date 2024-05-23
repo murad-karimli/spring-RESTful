@@ -4,16 +4,20 @@ FROM openjdk:17-jdk-alpine
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the Maven executable to the container
+# Copy the Maven executable and project files to the container
 COPY mvnw .
 COPY .mvn .mvn
-
-# Copy the pom.xml and source code to the container
 COPY pom.xml .
 COPY src ./src
 
 # Install Maven dependencies and build the application
 RUN ./mvnw clean package -DskipTests
+
+# Copy test files into the container
+COPY src/test ./src/test
+
+# Run tests
+RUN ./mvnw test
 
 # Expose the port the application runs on
 EXPOSE 8080
