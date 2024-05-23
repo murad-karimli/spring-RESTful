@@ -1,5 +1,7 @@
 package com.userspringmongo.app.controller;
 
+import com.userspringmongo.app.exception.UserException;
+import com.userspringmongo.app.exception.BadRequestException;
 import com.userspringmongo.app.model.User;
 import com.userspringmongo.app.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,41 +27,33 @@ public class UserController {
         return userRepository.save(user);
     }
 
-    @PatchMapping("/{id}")
-    public User updateUserFields(@PathVariable String id, @RequestBody User updatedUser) {
-        User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
-
-        if (updatedUser.getEmail() != null) {
-            existingUser.setEmail(updatedUser.getEmail());
-        }
-        if (updatedUser.getFirstName() != null) {
-            existingUser.setFirstName(updatedUser.getFirstName());
-        }
-        if (updatedUser.getLastName() != null) {
-            existingUser.setLastName(updatedUser.getLastName());
-        }
-        if (updatedUser.getBirthDate() != null) {
-            existingUser.setBirthDate(updatedUser.getBirthDate());
-        }
-        if (updatedUser.getAddress() != null) {
-            existingUser.setAddress(updatedUser.getAddress());
-        }
-        if (updatedUser.getPhoneNumber() != null) {
-            existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
-        }
-
-        return userRepository.save(existingUser);
-    }
-
     @PutMapping("/{id}")
-    public User updateAllUserFields(@PathVariable String id, @RequestBody User updatedUser) {
+    public User updateUser(@PathVariable String id, @RequestBody User updatedUser) {
+        if (!userRepository.existsById(id)) {
+            throw new UserException("User not found with id " + id);
+        }
         updatedUser.setId(id);
         return userRepository.save(updatedUser);
     }
 
+    @PatchMapping("/{id}")
+    public User patchUser(@PathVariable String id, @RequestBody User partialUpdate) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserException("User not found with id " + id));
+        if (partialUpdate.getEmail() != null) user.setEmail(partialUpdate.getEmail());
+        if (partialUpdate.getFirstName() != null) user.setFirstName(partialUpdate.getFirstName());
+        if (partialUpdate.getLastName() != null) user.setLastName(partialUpdate.getLastName());
+        if (partialUpdate.getBirthDate() != null) user.setBirthDate(partialUpdate.getBirthDate());
+        if (partialUpdate.getAddress() != null) user.setAddress(partialUpdate.getAddress());
+        if (partialUpdate.getPhoneNumber() != null) user.setPhoneNumber(partialUpdate.getPhoneNumber());
+        return userRepository.save(user);
+    }
+
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable String id) {
+        if (!userRepository.existsById(id)) {
+            throw new UserException("User not found with id " + id);
+        }
         userRepository.deleteById(id);
     }
 
@@ -68,9 +62,8 @@ public class UserController {
                                                   @RequestParam("to") String toDate) {
         LocalDate from = LocalDate.parse(fromDate);
         LocalDate to = LocalDate.parse(toDate);
-
         if (from.isAfter(to)) {
-            throw new IllegalArgumentException("\"From\" date must be before \"To\" date");
+            throw new BadRequestException("\"From\" date must be before \"To\" date");
         }
 
         return userRepository.findByBirthDateBetween(from, to);
