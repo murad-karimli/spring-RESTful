@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Value;
+import java.time.Period;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,6 +21,9 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
+    @Value("${user.minimum.age}")
+    private int minimumAge;
+
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userRepository.findAll();
@@ -27,8 +32,18 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
+        int age = calculateAge(user.getBirthDate());
+        if (age < minimumAge) {
+            throw new BadRequestException("User must be at least " + minimumAge + " years old.");
+        }
         User createdUser = userRepository.save(user);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+    }
+
+
+    private int calculateAge(LocalDate birthDate) {
+        LocalDate currentDate = LocalDate.now();
+        return Period.between(birthDate, currentDate).getYears();
     }
 
     @PutMapping("/{id}")

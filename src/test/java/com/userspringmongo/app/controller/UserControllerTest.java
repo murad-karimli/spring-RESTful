@@ -2,9 +2,7 @@ package com.userspringmongo.app.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.userspringmongo.app.exception.GlobalExceptionHandler;
-import com.userspringmongo.app.exception.UserException;
 import com.userspringmongo.app.model.User;
 import com.userspringmongo.app.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
